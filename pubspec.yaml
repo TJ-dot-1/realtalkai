@@ -1,0 +1,52 @@
+name: realtalk_ai
+description: "RealTalk AI — Scenario-Based Language Training App"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+
+  # Firebase (placeholder — uncomment when configured)
+  # firebase_core: ^2.24.0
+  # firebase_auth: ^4.16.0
+  # cloud_firestore: ^4.13.0
+
+  # Networking / AI
+  http: ^1.2.0
+  
+  # Audio
+  record: ^5.0.5
+  audioplayers: ^5.2.1
+  path_provider: ^2.1.2
+
+  # UI
+  google_fonts: ^5.1.0
+  animated_text_kit: ^4.2.2
+  shimmer: ^3.0.0
+  fl_chart: ^0.66.0
+  percent_indicator: ^4.2.3
+
+  # Utils
+  uuid: ^4.3.3
+  intl: ^0.19.0
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/animations/
