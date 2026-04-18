@@ -1,15 +1,14 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "build/web/**",
-      "use": "@vercel/static"
-    }
-  ],
+  "buildCommand": null,
+  "outputDirectory": "build/web",
   "routes": [
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/build/web/$1"
+      "dest": "/index.html"
     }
   ],
   "headers": [
@@ -21,7 +20,7 @@
           "value": "credentialless"
         },
         {
-          "key": "Cross-Origin-Opener-Policy",
+          "key": "Cross-Origin-Opener-Policy", 
           "value": "same-origin"
         }
       ]
