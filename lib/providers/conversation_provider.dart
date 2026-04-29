@@ -11,7 +11,14 @@ import '../services/firebase_service.dart';
 import '../utils/prompt_builder.dart';
 
 /// Conversation state
-enum ConversationStatus { idle, recording, transcribing, thinking, speaking, error }
+enum ConversationStatus {
+  idle,
+  recording,
+  transcribing,
+  thinking,
+  speaking,
+  error
+}
 
 class ConversationState {
   final ConversationStatus status;
@@ -58,8 +65,7 @@ class ConversationState {
   List<Message> get displayMessages =>
       messages.where((m) => !m.isSystem).toList();
 
-  int get userMessageCount =>
-      messages.where((m) => m.isUser).length;
+  int get userMessageCount => messages.where((m) => m.isUser).length;
 }
 
 class ConversationNotifier extends StateNotifier<ConversationState> {
@@ -217,8 +223,17 @@ class ConversationNotifier extends StateNotifier<ConversationState> {
       await Future.delayed(Duration(milliseconds: text.length * 60));
       await AudioService.cleanupFile(audioPath);
     } catch (e) {
-      // TTS failure is non-critical — conversation continues
+      // TTS failure is non-critical in most cases — log and surface quota issues
       debugPrint('TTS failed: $e');
+      final errMsg = e.toString();
+      if (errMsg.contains('insufficient quota') ||
+          errMsg.contains('insufficient_quota')) {
+        state = state.copyWith(
+          status: ConversationStatus.error,
+          error:
+              'Text-to-speech quota exhausted. Check your OpenAI plan/billing at https://platform.openai.com/account/usage',
+        );
+      }
     }
   }
 

@@ -16,10 +16,10 @@ class SpeechToTextService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${ApiConfig.openAiBaseUrl}/audio/transcriptions'),
+        Uri.parse('${ApiConfig.audioBaseUrl}/audio/transcriptions'),
       );
 
-      request.headers['Authorization'] = 'Bearer ${ApiConfig.openAiApiKey}';
+      request.headers['Authorization'] = 'Bearer ${ApiConfig.audioApiKey}';
       request.fields['model'] = ApiConfig.whisperModel;
       request.fields['language'] = 'en'; // Optimize for English
       request.fields['response_format'] = 'text';
@@ -34,7 +34,8 @@ class SpeechToTextService {
       if (response.statusCode == 200) {
         return response.body.trim();
       } else {
-        throw Exception('Whisper API error: ${response.statusCode} - ${response.body}');
+        throw Exception(
+            'Whisper API error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       throw Exception('Speech-to-text failed: $e');
@@ -46,13 +47,14 @@ class SpeechToTextService {
 class TextToSpeechService {
   /// Convert text to speech audio file
   /// Returns the path to the generated audio file
-  static Future<String> synthesize(String text, {String voice = 'alloy'}) async {
+  static Future<String> synthesize(String text,
+      {String voice = 'alloy'}) async {
     try {
       final response = await http.post(
-        Uri.parse('${ApiConfig.openAiBaseUrl}/audio/speech'),
+        Uri.parse('${ApiConfig.audioBaseUrl}/audio/speech'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${ApiConfig.openAiApiKey}',
+          'Authorization': 'Bearer ${ApiConfig.audioApiKey}',
         },
         body: jsonEncode({
           'model': ApiConfig.ttsModel,
@@ -70,11 +72,41 @@ class TextToSpeechService {
         final audioFile = File('${tempDir.path}/tts_$timestamp.mp3');
         await audioFile.writeAsBytes(response.bodyBytes);
         return audioFile.path;
+      } else if (response.statusCode == 429) {
+        // Rate limit or quota exceeded — try to parse the error body for details
+        try {
+          final body = jsonDecode(response.body) as Map<String, dynamic>?;
+          final err =
+              body != null && body.containsKey('error') ? body['error'] : null;
+          final errMsg = err != null && err['message'] != null
+              ? err['message']
+              : response.body;
+          final errCode =
+              err != null && err['code'] != null ? err['code'] : null;
+
+          if (errCode == 'insufficient_quota' ||
+              (err != null && err['type'] == 'insufficient_quota')) {
+            throw Exception(
+                'TTS failed: insufficient quota. Check your OpenAI plan and billing: https://platform.openai.com/account/usage. Message: $errMsg');
+          }
+
+          final retryAfter = response.headers['retry-after'];
+          if (retryAfter != null) {
+            throw Exception(
+                'TTS rate limited. Retry after $retryAfter seconds. Message: $errMsg');
+          }
+
+          throw Exception('TTS rate limited (429): $errMsg');
+        } catch (parseError) {
+          throw Exception('TTS API error: 429 - ${response.body}');
+        }
       } else {
-        throw Exception('TTS API error: ${response.statusCode} - ${response.body}');
+        throw Exception(
+            'TTS API error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      throw Exception('Text-to-speech failed: $e');
+      throw Exception(
+          'Text-to-speech failed: $e\nHint: If you see an "insufficient_quota" error, check OpenAI billing/usage.\nConsider adding a local device fallback (for example `flutter_tts`) to improve reliability when remote TTS is unavailable.');
     }
   }
 }
