@@ -1,9 +1,18 @@
+import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 void main() async {
-  // Test script for OpenRouter Chat Completions
-  final openRouterKey = 'YOUR_OPENROUTER_KEY_HERE';
+  String openRouterKey = 'YOUR_API_KEY_HERE';
+  final envFile = File('.env');
+  if (await envFile.exists()) {
+    final lines = await envFile.readAsLines();
+    for (var line in lines) {
+      if (line.startsWith('OPENAI_API_KEY=')) {
+        openRouterKey = line.substring('OPENAI_API_KEY='.length).trim();
+      }
+    }
+  }
   
   final response = await http.post(
     Uri.parse('https://openrouter.ai/api/v1/chat/completions'),

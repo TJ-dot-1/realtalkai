@@ -213,6 +213,9 @@ class ConversationNotifier extends StateNotifier<ConversationState> {
 
   /// Play AI response via TTS
   Future<void> _speakMessage(String text) async {
+    // TEMPORARILY DISABLED VOICE
+    return;
+
     try {
       final audioPath = await TextToSpeechService.synthesize(
         text,

@@ -22,13 +22,13 @@ class ApiConfig {
   // OpenAI config (use `--dart-define=OPENAI_API_KEY=...` to override)
   // This is currently set to OpenRouter for text generation
   static const String openAiApiKey = String.fromEnvironment('OPENAI_API_KEY',
-      defaultValue: 'YOUR_OPENROUTER_KEY_HERE');
+      defaultValue: 'YOUR_API_KEY_HERE');
   static const String openAiBaseUrl = String.fromEnvironment('OPENAI_BASE_URL',
       defaultValue: 'https://openrouter.ai/api/v1');
 
   // Audio config (OpenRouter does not support TTS/Whisper, so we use real OpenAI here)
   static const String audioApiKey = String.fromEnvironment('AUDIO_API_KEY',
-      defaultValue: 'open key');
+      defaultValue: 'NO_AUDIO_KEY_PROVIDED');
   static const String audioBaseUrl = String.fromEnvironment('AUDIO_BASE_URL',
       defaultValue: 'https://api.openai.com/v1');
 
