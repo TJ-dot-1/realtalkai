@@ -6,7 +6,7 @@ import '../models/feedback_result.dart';
 
 /// OpenAI Chat API service — handles conversation and feedback generation
 class OpenAIService {
-  static const _headers = {
+  static Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer ${ApiConfig.openAiApiKey}',
   };

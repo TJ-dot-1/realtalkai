@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'app.dart';
 
 /// RealTalk AI — Scenario-Based Language Training App
 /// Entry point
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   // Set system UI overlay style for dark theme
   SystemChrome.setSystemUIOverlayStyle(

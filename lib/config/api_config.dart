@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 /// API Configuration
 /// Replace placeholder values with your actual API keys
 class ApiConfig {
@@ -16,37 +18,31 @@ class ApiConfig {
   //             --dart-define=GEMINI_API_KEY=ya29...
 
   // Provider selection: 'openai' or 'gemini' (defaults to 'openai')
-  static const String apiProvider =
-      String.fromEnvironment('API_PROVIDER', defaultValue: 'openai');
+  static String get apiProvider =>
+      dotenv.env['API_PROVIDER'] ?? 'openai';
 
-  // OpenAI config (use `--dart-define=OPENAI_API_KEY=...` to override)
+  // OpenAI config (use .env OPENAI_API_KEY to override)
   // This is currently set to OpenRouter for text generation
-  static const String openAiApiKey = String.fromEnvironment('OPENAI_API_KEY',
-      defaultValue: '');
-  static const String openAiBaseUrl = String.fromEnvironment('OPENAI_BASE_URL',
-      defaultValue: 'https://openrouter.ai/api/v1');
+  static String get openAiApiKey => dotenv.env['OPENAI_API_KEY'] ?? '';
+  static String get openAiBaseUrl => dotenv.env['OPENAI_BASE_URL'] ?? 'https://openrouter.ai/api/v1';
 
   // Audio config (OpenRouter does not support TTS/Whisper, so we use real OpenAI here)
-  static const String audioApiKey = String.fromEnvironment('AUDIO_API_KEY',
-      defaultValue: 'NO_AUDIO_KEY_PROVIDED');
-  static const String audioBaseUrl = String.fromEnvironment('AUDIO_BASE_URL',
-      defaultValue: 'https://api.openai.com/v1');
+  static String get audioApiKey => dotenv.env['AUDIO_API_KEY'] ?? 'NO_AUDIO_KEY_PROVIDED';
+  static String get audioBaseUrl => dotenv.env['AUDIO_BASE_URL'] ?? 'https://api.openai.com/v1';
 
-  // Optional: Gemini config (use `--dart-define=GEMINI_API_KEY=...`)
-  static const String geminiApiKey = String.fromEnvironment('GEMINI_API_KEY',
-      defaultValue: '');
-  static const String geminiBaseUrl = String.fromEnvironment('GEMINI_BASE_URL',
-      defaultValue: 'https://generative.googleapis.com/v1');
+  // Optional: Gemini config (use .env GEMINI_API_KEY)
+  static String get geminiApiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
+  static String get geminiBaseUrl => dotenv.env['GEMINI_BASE_URL'] ?? 'https://generative.googleapis.com/v1';
 
-  // Models (can be overridden via --dart-define if needed)
-  static const String chatModel =
-      String.fromEnvironment('CHAT_MODEL', defaultValue: 'gpt-5.4-mini');
-  static const String feedbackModel =
-      String.fromEnvironment('FEEDBACK_MODEL', defaultValue: 'gpt-5.4-mini');
-  static const String whisperModel =
-      String.fromEnvironment('WHISPER_MODEL', defaultValue: 'whisper-1');
-  static const String ttsModel =
-      String.fromEnvironment('TTS_MODEL', defaultValue: 'tts-1');
+  // Models (can be overridden via .env if needed)
+  static String get chatModel =>
+      dotenv.env['CHAT_MODEL'] ?? 'gpt-5.4-mini';
+  static String get feedbackModel =>
+      dotenv.env['FEEDBACK_MODEL'] ?? 'gpt-5.4-mini';
+  static String get whisperModel =>
+      dotenv.env['WHISPER_MODEL'] ?? 'whisper-1';
+  static String get ttsModel =>
+      dotenv.env['TTS_MODEL'] ?? 'tts-1';
 
   // TTS Voices mapped to characters (kept as constants but can be changed)
   static const String voiceFriendly = 'shimmer'; // Warm female voice
