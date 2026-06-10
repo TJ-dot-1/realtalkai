@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": null,
+  "buildCommand": "flutter build web --release --dart-define=OPENAI_API_KEY=$OPENAI_API_KEY",
   "outputDirectory": "build/web",
   "routes": [
     {
