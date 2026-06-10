@@ -8,7 +8,11 @@ import 'app.dart';
 /// Entry point
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("No .env file found. Falling back to system environment variables.");
+  }
 
   // Set system UI overlay style for dark theme
   SystemChrome.setSystemUIOverlayStyle(
