@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 void main() async {
-  String openRouterKey = 'YOUR_API_KEY_HERE';
+  String openRouterKey = '';
   final envFile = File('.env');
   if (await envFile.exists()) {
     final lines = await envFile.readAsLines();

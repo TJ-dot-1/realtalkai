@@ -22,7 +22,7 @@ class ApiConfig {
   // OpenAI config (use `--dart-define=OPENAI_API_KEY=...` to override)
   // This is currently set to OpenRouter for text generation
   static const String openAiApiKey = String.fromEnvironment('OPENAI_API_KEY',
-      defaultValue: 'YOUR_API_KEY_HERE');
+      defaultValue: '');
   static const String openAiBaseUrl = String.fromEnvironment('OPENAI_BASE_URL',
       defaultValue: 'https://openrouter.ai/api/v1');
 
