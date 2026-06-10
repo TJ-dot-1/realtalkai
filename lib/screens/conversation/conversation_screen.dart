@@ -7,7 +7,6 @@ import '../../providers/scenario_provider.dart';
 import '../../providers/conversation_provider.dart';
 import '../../providers/feedback_provider.dart';
 import '../../widgets/conversation/chat_bubble.dart';
-import '../../widgets/conversation/voice_input_button.dart';
 import '../../widgets/conversation/typing_indicator.dart';
 
 /// Core conversation screen — voice + text chat UI
@@ -21,7 +20,6 @@ class ConversationScreen extends ConsumerStatefulWidget {
 class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
-  bool _showTextInput = false;
 
   @override
   void initState() {
@@ -289,90 +287,46 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
       ),
       child: Column(
         children: [
-          // Text input toggle
-          if (_showTextInput)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _textController,
-                      decoration: InputDecoration(
-                        hintText: 'Type your message...',
-                        filled: true,
-                        fillColor: AppTheme.surfaceLight,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
+          // Text input
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                      filled: true,
+                      fillColor: AppTheme.surfaceLight,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
                       ),
-                      style: const TextStyle(
-                          color: AppTheme.textPrimary, fontSize: 15),
-                      onSubmitted: (_) => _sendText(),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: _sendText,
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.send_rounded,
-                          color: Colors.white, size: 20),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          // Voice button + keyboard toggle
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Toggle keyboard
-              GestureDetector(
-                onTap: () => setState(() => _showTextInput = !_showTextInput),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceLight,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _showTextInput
-                        ? Icons.keyboard_hide_rounded
-                        : Icons.keyboard_rounded,
-                    color: AppTheme.textSecondary,
-                    size: 20,
+                    style: const TextStyle(
+                        color: AppTheme.textPrimary, fontSize: 15),
+                    onSubmitted: (_) => _sendText(),
                   ),
                 ),
-              ),
-              const SizedBox(width: 20),
-              // Voice button
-              VoiceInputButton(
-                isRecording:
-                    conversation.status == ConversationStatus.recording,
-                isDisabled: conversation.isProcessing &&
-                    conversation.status != ConversationStatus.recording,
-                onTapDown: () {
-                  ref.read(conversationProvider.notifier).startRecording();
-                },
-                onTapUp: () {
-                  ref.read(conversationProvider.notifier).stopRecording();
-                },
-                statusText: statusText,
-              ),
-              const SizedBox(width: 20),
-              // Placeholder for symmetry
-              const SizedBox(width: 44, height: 44),
-            ],
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: _sendText,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.send_rounded,
+                        color: Colors.white, size: 20),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

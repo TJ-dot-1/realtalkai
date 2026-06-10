@@ -5,8 +5,6 @@ import '../models/scenario.dart';
 import '../models/character.dart';
 import '../models/session.dart';
 import '../services/openai_service.dart';
-import '../services/speech_service.dart';
-import '../services/audio_service.dart';
 import '../services/firebase_service.dart';
 import '../utils/prompt_builder.dart';
 
@@ -69,7 +67,6 @@ class ConversationState {
 }
 
 class ConversationNotifier extends StateNotifier<ConversationState> {
-  final AudioService _audioService = AudioService();
   // ignore: unused_field
   late Character _character;
 
@@ -109,66 +106,9 @@ class ConversationNotifier extends StateNotifier<ConversationState> {
       session: session,
       isSessionActive: true,
     );
-
-    // Play opening message via TTS
-    _speakMessage(openingMessage);
   }
 
-  /// Handle voice input — start recording
-  Future<void> startRecording() async {
-    try {
-      final hasPermission = await _audioService.hasPermission();
-      if (!hasPermission) {
-        state = state.copyWith(
-          status: ConversationStatus.error,
-          error: 'Microphone permission required',
-        );
-        return;
-      }
 
-      await _audioService.startRecording();
-      state = state.copyWith(status: ConversationStatus.recording);
-    } catch (e) {
-      state = state.copyWith(
-        status: ConversationStatus.error,
-        error: 'Failed to start recording: $e',
-      );
-    }
-  }
-
-  /// Stop recording and process voice input
-  Future<void> stopRecording() async {
-    try {
-      final audioPath = await _audioService.stopRecording();
-      if (audioPath == null) {
-        state = state.copyWith(status: ConversationStatus.idle);
-        return;
-      }
-
-      // Step 1: Transcribe
-      state = state.copyWith(status: ConversationStatus.transcribing);
-      final transcript = await SpeechToTextService.transcribe(audioPath);
-
-      if (transcript.isEmpty) {
-        state = state.copyWith(
-          status: ConversationStatus.idle,
-          error: 'Could not understand audio. Please try again.',
-        );
-        return;
-      }
-
-      // Process the transcribed text
-      await _processUserInput(transcript, isVoice: true);
-
-      // Clean up audio file
-      await AudioService.cleanupFile(audioPath);
-    } catch (e) {
-      state = state.copyWith(
-        status: ConversationStatus.error,
-        error: 'Voice processing failed: $e',
-      );
-    }
-  }
 
   /// Handle text input
   Future<void> sendTextMessage(String text) async {
@@ -196,13 +136,8 @@ class ConversationNotifier extends StateNotifier<ConversationState> {
       final allMessages = [...updatedMessages, aiMessage];
       state = state.copyWith(
         messages: allMessages,
-        status: ConversationStatus.speaking,
+        status: ConversationStatus.idle,
       );
-
-      // Step 3: Speak the response
-      await _speakMessage(aiResponse);
-
-      state = state.copyWith(status: ConversationStatus.idle);
     } catch (e) {
       state = state.copyWith(
         status: ConversationStatus.error,
@@ -211,34 +146,7 @@ class ConversationNotifier extends StateNotifier<ConversationState> {
     }
   }
 
-  /// Play AI response via TTS
-  Future<void> _speakMessage(String text) async {
-    // TEMPORARILY DISABLED VOICE
-    return;
 
-    try {
-      final audioPath = await TextToSpeechService.synthesize(
-        text,
-        voice: _character.ttsVoice,
-      );
-      await _audioService.playAudio(audioPath);
-      // Wait for audio to finish (approximate)
-      await Future.delayed(Duration(milliseconds: text.length * 60));
-      await AudioService.cleanupFile(audioPath);
-    } catch (e) {
-      // TTS failure is non-critical in most cases — log and surface quota issues
-      debugPrint('TTS failed: $e');
-      final errMsg = e.toString();
-      if (errMsg.contains('insufficient quota') ||
-          errMsg.contains('insufficient_quota')) {
-        state = state.copyWith(
-          status: ConversationStatus.error,
-          error:
-              'Text-to-speech quota exhausted. Check your OpenAI plan/billing at https://platform.openai.com/account/usage',
-        );
-      }
-    }
-  }
 
   /// End the conversation session
   Future<Session> endSession() async {
@@ -257,7 +165,6 @@ class ConversationNotifier extends StateNotifier<ConversationState> {
       await FirestoreService.saveSession(session.toMap());
     }
 
-    await _audioService.dispose();
     return session!;
   }
 
@@ -271,7 +178,6 @@ class ConversationNotifier extends StateNotifier<ConversationState> {
 
   @override
   void dispose() {
-    _audioService.dispose();
     super.dispose();
   }
 }
