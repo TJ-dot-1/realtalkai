@@ -42,17 +42,33 @@
 <body>
   <script>
     window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
-      });
+      // Fetch environment variables from Vercel serverless function,
+      // then boot Flutter once they are available on window._flutterEnv.
+      function bootFlutter() {
+        _flutter.loader.loadEntrypoint({
+          serviceWorker: {
+            serviceWorkerVersion: serviceWorkerVersion,
+          },
+          onEntrypointLoaded: function(engineInitializer) {
+            engineInitializer.initializeEngine().then(function(appRunner) {
+              appRunner.runApp();
+            });
+          }
+        });
+      }
+
+      fetch('/api/env')
+        .then(function(res) { return res.json(); })
+        .then(function(env) {
+          window._flutterEnv = env;
+          console.log('[RealTalk] Environment loaded from server');
+          bootFlutter();
+        })
+        .catch(function(err) {
+          console.warn('[RealTalk] Could not load env from /api/env:', err.message);
+          window._flutterEnv = {};
+          bootFlutter();
+        });
     });
   </script>
 </body>
