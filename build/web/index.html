@@ -34,41 +34,27 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "3018762361";
+    const serviceWorkerVersion = "2041361758";
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
 <body>
+  <!-- Load env vars generated at Vercel build time. Falls back gracefully for local dev. -->
+  <script src="env_config.js" onerror="window._flutterEnv={}; console.log('[RealTalk] No env_config.js found, using local .env')"></script>
   <script>
     window.addEventListener('load', function(ev) {
-      // Fetch environment variables from Vercel serverless function,
-      // then boot Flutter once they are available on window._flutterEnv.
-      function bootFlutter() {
-        _flutter.loader.loadEntrypoint({
-          serviceWorker: {
-            serviceWorkerVersion: serviceWorkerVersion,
-          },
-          onEntrypointLoaded: function(engineInitializer) {
-            engineInitializer.initializeEngine().then(function(appRunner) {
-              appRunner.runApp();
-            });
-          }
-        });
-      }
-
-      fetch('/api/env')
-        .then(function(res) { return res.json(); })
-        .then(function(env) {
-          window._flutterEnv = env;
-          console.log('[RealTalk] Environment loaded from server');
-          bootFlutter();
-        })
-        .catch(function(err) {
-          console.warn('[RealTalk] Could not load env from /api/env:', err.message);
-          window._flutterEnv = {};
-          bootFlutter();
-        });
+      if (!window._flutterEnv) window._flutterEnv = {};
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
+        }
+      });
     });
   </script>
 </body>
