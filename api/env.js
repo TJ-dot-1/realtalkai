@@ -1,12 +1,20 @@
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
+  // Allow CORS for same-origin fetch from the Flutter app
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+
   // Only allow GET requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   // Return environment variables configured in Vercel project settings
-  res.setHeader('Cache-Control', 'no-store');
-  res.json({
+  res.status(200).json({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
     OPENAI_BASE_URL: process.env.OPENAI_BASE_URL || 'https://openrouter.ai/api/v1',
     CHAT_MODEL: process.env.CHAT_MODEL || 'gpt-5.4-mini',
@@ -19,4 +27,4 @@ export default function handler(req, res) {
     WHISPER_MODEL: process.env.WHISPER_MODEL || 'whisper-1',
     TTS_MODEL: process.env.TTS_MODEL || 'tts-1',
   });
-}
+};
