@@ -53,9 +53,9 @@ class ApiConfig {
       _resolve('GEMINI_BASE_URL', defaultValue: 'https://generative.googleapis.com/v1');
 
   // Models (can be overridden via .env if needed)
-  static String get chatModel => _resolve('CHAT_MODEL', defaultValue: 'gpt-5.4-mini');
+  static String get chatModel => _resolve('CHAT_MODEL', defaultValue: 'openai/gpt-4o-mini');
   
-  static String get feedbackModel => _resolve('FEEDBACK_MODEL', defaultValue: 'gpt-5.4-mini');
+  static String get feedbackModel => _resolve('FEEDBACK_MODEL', defaultValue: 'openai/gpt-4o-mini');
   
   static String get whisperModel => _resolve('WHISPER_MODEL', defaultValue: 'whisper-1');
   

@@ -1,5 +1,6 @@
 {
-  "buildCommand": "node generate_env.js",
-  "outputDirectory": "build/web",
-  "framework": null
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
