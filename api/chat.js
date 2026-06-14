@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
 
     const apiKey = process.env.OPENAI_API_KEY;
     const baseUrl = process.env.OPENAI_BASE_URL || 'https://openrouter.ai/api/v1';
-    const chatModel = model || process.env.CHAT_MODEL || 'gpt-4.1-mini';
+    const chatModel = model || process.env.CHAT_MODEL || 'openai/gpt-4o-mini';
 
     if (!apiKey) {
       return res.status(500).json({ error: 'OPENAI_API_KEY not configured' });
